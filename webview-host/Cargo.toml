@@ -1,0 +1,17 @@
+[package]
+name = "xbrowser"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+cargo-deb = "3.2.0"
+cookie = "0.18.1"
+gtk = "0.15"
+winit = "0.30.11"
+wry = "0.24.11"
+x11-dl = "2.21.0"
+
+[package.metadata.deb]
+maintainer = "Meat <tangqianchong@gmail.com>"
+section = "utils"
+depends = "$auto"
