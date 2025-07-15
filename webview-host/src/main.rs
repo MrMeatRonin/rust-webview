@@ -40,8 +40,8 @@ fn handle_client(mut stream: TcpStream) -> std::io::Result<()> {
 }
 
 fn main() -> std::io::Result<()> {
-    let listener = TcpListener::bind("127.0.0.1:8080")?;
-    println!("Server listening on port 8080...");
+    let listener = TcpListener::bind("127.0.0.1:39174")?;
+    println!("Server listening on port 39174...");
 
     for stream in listener.incoming() {
         match stream {
