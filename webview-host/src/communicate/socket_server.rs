@@ -25,6 +25,8 @@ impl SocketServer {
                 Ok(stream) => {
                     println!("New connection: {}", stream.peer_addr()?);
                     let socket_server = Arc::clone(&self);
+
+                    //provide threads to process stream
                     thread::spawn(
                         move || match socket_server.session_factory.create_on(stream) {
                             Ok(_) => todo!(),

@@ -1,5 +1,7 @@
 package webview.client;
 
+import com.alibaba.fastjson.JSONObject;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -72,7 +74,10 @@ public class WebviewClient {
             if ("exit".equalsIgnoreCase(input)) {
                 System.exit(0);
             }
-            webviewClient.send(input);
+
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("handler", input);
+            webviewClient.send(jsonObject.toJSONString());
         }
     }
 }

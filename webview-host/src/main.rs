@@ -1,3 +1,5 @@
+#![allow(warnings)]
+
 mod communicate;
 
 use communicate::SessionFactory;

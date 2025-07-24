@@ -1,6 +1,8 @@
 use std::io::{Read, Write};
 use std::net::TcpStream;
 
+use crate::communicate::Session;
+
 pub struct SessionFactory {}
 
 impl SessionFactory {
@@ -8,7 +10,12 @@ impl SessionFactory {
         return SessionFactory {};
     }
 
+    /**
+     * Create session upon TcpStream.
+     * Define packet transfering structure (protocol).
+     */
     pub fn create_on(&self, mut stream: TcpStream) -> std::io::Result<()> {
+         let session = Session::new();
         let mut len_buffer = [0u8; size_of::<u32>()];
 
         loop {
@@ -34,6 +41,8 @@ impl SessionFactory {
             let received = String::from_utf8_lossy(&buffer);
             println!("Received ({} bytes): {}", msg_len, received);
 
+           session.on_received(&received);
+
             // Send response (same protocol)// Send response (same protocol)
             let response = format!("Echo: {}", received);
             let response_len = response.len() as u32;
@@ -42,6 +51,7 @@ impl SessionFactory {
             stream.flush()?;
         }
 
+        stream.shutdown(std::net::Shutdown::Both)?;
         Ok(())
     }
 }
