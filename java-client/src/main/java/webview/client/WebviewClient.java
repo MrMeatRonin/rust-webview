@@ -75,9 +75,13 @@ public class WebviewClient {
                 System.exit(0);
             }
 
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("handler", input);
-            webviewClient.send(jsonObject.toJSONString());
+            JSONObject request = new JSONObject();
+            request.put("handler", input);
+            JSONObject params = new JSONObject();
+            request.put("params", params);
+            params.put("Browser", 1);
+
+            webviewClient.send(request.toJSONString());
         }
     }
 }
