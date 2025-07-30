@@ -14,8 +14,6 @@ use std::{
 const HEAD_LEN: i32 = 4;
 const MAX_PACKET_SIZE: usize = 1024 * 1024;
 
-type HandlerMap = HashMap<String, Box<dyn RequestHandler>>;
-
 #[derive(Debug)]
 enum DecodeState {
     /// Represent waiting for reading of head.
@@ -36,21 +34,19 @@ pub struct Decoder {
     len_buffer: [u8; 4],
     packet_buffer: Box<Vec<u8>>,
     state: DecodeState,
-    handler_map: HandlerMap,
+    packet_handler: Box<dyn FnMut(String) -> anyhow::Result<()> + Send>,
 }
 
 impl Decoder {
-    pub fn new(handlers: Vec<Box<dyn RequestHandler>>) -> Self {
-        let mut handler_map: HandlerMap = HashMap::new();
-        for handler in handlers {
-            handler_map.insert(String::from(handler.name()), handler);
-        }
-
+    pub fn new<F>(packet_handler: F) -> Self
+    where
+        F: FnMut(String) -> anyhow::Result<()> + 'static + Send,
+    {
         Decoder {
             len_buffer: [0u8; size_of::<u32>()],
             packet_buffer: Box::new(Vec::with_capacity(0)),
             state: DecodeState::ExpectHead(0),
-            handler_map,
+            packet_handler: Box::new(packet_handler),
         }
     }
 
@@ -99,8 +95,12 @@ impl Decoder {
                     let packet = String::from_utf8_lossy(&packet_buffer);
 
                     //for consumers
-                    let request: Request = serde_json::from_str(&packet)?;
-                    println!("Received request {:?}", request);
+                    match (self.packet_handler)(packet.into_owned()) {
+                        Ok(_) => {}
+                        Err(error) => {
+                            println!("{:?}", error)
+                        }
+                    }
 
                     //change state and recursive call (use original len buffer)
                     self.state = DecodeState::ExpectHead(0);

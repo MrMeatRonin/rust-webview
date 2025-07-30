@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class WebviewClient {
@@ -74,8 +75,8 @@ public class WebviewClient {
             if ("exit".equalsIgnoreCase(input)) {
                 System.exit(0);
             }
-
             JSONObject request = new JSONObject();
+            request.put("id", UUID.randomUUID().toString());
             request.put("handler", input);
             JSONObject params = new JSONObject();
             request.put("params", params);
