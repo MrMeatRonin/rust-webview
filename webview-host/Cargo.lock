@@ -4749,6 +4749,7 @@ name = "xbrowser"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bytes",
  "cargo-deb",
  "cookie",
  "gtk",

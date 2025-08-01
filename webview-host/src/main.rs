@@ -6,13 +6,12 @@ mod webview;
 use std::collections::HashMap;
 use std::thread;
 
-use anyhow::Ok;
 use mini_redis::{Connection, Frame};
 use tokio::net::{TcpListener, TcpStream};
 
 use crate::communicate::Decoder;
 use crate::communicate::Request;
-use crate::communicate::TcpSession;
+use crate::communicate::Session;
 
 #[tokio::main]
 async fn main() {
@@ -23,13 +22,28 @@ async fn main() {
         // The second item contains the IP and port of the new connection.
         let (stream, _) = listener.accept().await.unwrap();
 
+        //make socket accept channels instead of providing them
+        //manage tcp session more carefully
+        //ToDo: create an invocation manager to manage sessions
+        //can derive sub session in session (like browser scope)
+
         tokio::spawn(async move {
-            let decoder = Decoder::new(|packet| {
+            let (mut session, mut reader_rx, mut writer_tx) = Session::link(stream);
+
+            let mut decoder = Decoder::new(|packet| {
                 let request: Request = serde_json::from_str(&packet)?;
                 println!("Received request {:?}", request);
                 Ok(())
             });
-            TcpSession::new(stream, decoder).await.unwrap().run().await;
+
+            while let Ok(bytes) = reader_rx.recv() {
+                if let Some(bytes) = bytes {
+                    decoder.on_received(&bytes);
+                } else {
+                    break; //EOF
+                }
+            }
+            session.shutdown();
         });
     }
 }

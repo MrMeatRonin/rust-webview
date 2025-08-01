@@ -17,6 +17,7 @@ uuid = "1.17.0"
 winit = "0.30.11"
 wry = "0.24.11"
 x11-dl = "2.21.0"
+bytes = "1.10.1"
 
 [package.metadata.deb]
 maintainer = "Meat <tangqianchong@gmail.com>"

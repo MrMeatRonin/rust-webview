@@ -1,8 +1,8 @@
 mod decoder;
 mod encoder;
-mod tcp_session;
+mod session;
 mod traits;
 
 pub use decoder::Decoder;
-pub use tcp_session::TcpSession;
+pub use session::Session;
 pub use traits::{Request, RequestHandler};

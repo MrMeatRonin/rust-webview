@@ -1,7 +1,4 @@
-use crate::communicate::{
-    tcp_session::SessionCommand,
-    traits::{Request, RequestHandler},
-};
+use crate::communicate::traits::{Request, RequestHandler};
 use anyhow::Error;
 use mini_redis::buffer;
 use std::{
