@@ -36,11 +36,14 @@ async fn main() {
                 Ok(())
             });
 
-            while let Ok(bytes) = reader_rx.recv() {
-                if let Some(bytes) = bytes {
-                    decoder.on_received(&bytes);
-                } else {
-                    break; //EOF
+            while let Some(bytes) = reader_rx.recv().await {
+                match bytes {
+                    communicate::Input::EOF => {
+                        break;
+                    }
+                    communicate::Input::Data(bytes) => {
+                        decoder.on_received(&bytes);
+                    }
                 }
             }
             session.shutdown();
